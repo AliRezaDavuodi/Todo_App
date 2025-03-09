@@ -3,5 +3,6 @@ export interface ITodo {
     title: string,
     description: string
     created_at: Date,
-    user_id: number
+    user_id: number,
+    status: number
 }
