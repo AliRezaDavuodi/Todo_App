@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import cors from 'cors'
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
+import { errorHandler } from './middleware/Error.middleware';
 
 dotenv.config()
 
@@ -13,5 +14,6 @@ app.use(morgan('combined'))
 app.use(helmet())
 app.use(cors())
 app.use(bodyParser.json())
+app.use(errorHandler)
 
 export default app

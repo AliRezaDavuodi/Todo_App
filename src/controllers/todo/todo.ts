@@ -5,31 +5,41 @@ import { resolve } from "node:path";
 import { sendSuccess } from "../../helper/sendSuccess";
 import { validateDto } from "../../helper/validateDto";
 import { createTodoDto } from "../../Dtos/todo/createTodoDto";
+import { FileRepository } from "../../helper/file.repository";
+import { sendError } from "../../helper/sendError";
 
 export const todo: Router = Router()
 
-const dataPath = resolve(`${__dirname}/muck_todo.json`)
 
-
-todo.get('/', (_req: Request, res: Response) => {
-    const todos: ITodo[] = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
-    sendSuccess(res, todos)
+todo.get('/', async (_req: Request, res: Response) => {
+    try {
+        const todos: ITodo[] = await FileRepository.readFile()
+        sendSuccess(res, todos)
+    } catch (error) {
+        console.log(error);
+        sendError(res, 'failed to fetch todos', 500)
+    }
 })
 
-todo.post('/', validateDto(createTodoDto), (req: Request<{}, {}, createTodoDto>, res: Response) => {
-    const todos: ITodo[] = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
-    const newTodo: ITodo = {
-        id: Date.now(),
-        title: req.body.title,
-        description: req.body.description as string,
-        user_id: req.body.user_id,
-        status: 1,
-        created_at: new Date()
+todo.post('/', validateDto(createTodoDto), async (req: Request<{}, {}, createTodoDto>, res: Response) => {
+    try {
+        const todos: ITodo[] = await FileRepository.readFile()
+        const newTodo: ITodo = {
+            id: Date.now(),
+            title: req.body.title,
+            description: req.body.description as string,
+            user_id: req.body.user_id,
+            status: 1,
+            created_at: new Date()
+        }
+        const newTodoData: ITodo[] = [...todos, newTodo]
+        FileRepository.writeFile(newTodoData)
+        sendSuccess(res, 'Todo added successfully.', 201)
+    } catch (error) {
+        console.log(error);
+        sendError(res, 'Failed to create todo', 500)
+
     }
-    const fileUrl = `${__dirname}/muck_todo.json`
-    const newTodoData: ITodo[] = [...todos, newTodo]
-    fs.writeFileSync(fileUrl, JSON.stringify(newTodoData), "utf-8")
-    res.json(JSON.stringify(newTodoData))
 })
 
 todo.patch('/', (_req: Request, res: Response) => {
