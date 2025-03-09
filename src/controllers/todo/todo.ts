@@ -7,6 +7,7 @@ import { validateDto } from "../../helper/validateDto";
 import { createTodoDto } from "../../Dtos/todo/createTodoDto";
 import { FileRepository } from "../../helper/file.repository";
 import { sendError } from "../../helper/sendError";
+import { DeleteTodoDto } from "../../Dtos/todo/deleteTodoDto";
 
 export const todo: Router = Router()
 
@@ -33,7 +34,7 @@ todo.post('/', validateDto(createTodoDto), async (req: Request<{}, {}, createTod
             created_at: new Date()
         }
         const newTodoData: ITodo[] = [...todos, newTodo]
-        FileRepository.writeFile(newTodoData)
+        await FileRepository.writeFile(newTodoData)
         sendSuccess(res, 'Todo added successfully.', 201)
     } catch (error) {
         console.log(error);
@@ -46,6 +47,24 @@ todo.patch('/', (_req: Request, res: Response) => {
     res.end('post method called')
 })
 
-todo.delete('/', (_req: Request, res: Response) => {
-    res.end('delete method called')
+todo.delete('/', validateDto(DeleteTodoDto), async (req: Request<{}, {}, DeleteTodoDto>, res: Response) => {
+    try {
+        const todos = await FileRepository.readFile()
+        const id = Number(req.body.id)
+
+        const todoIndex = todos.findIndex(todo => todo.id === id);
+
+        if (todoIndex === -1) {
+            sendError(res, 'Todo NOT found.', 404)
+            return
+        }
+
+        const updateTodos = todos.filter(todo => todo.id !== id)
+        await FileRepository.writeFile(updateTodos)
+
+        sendSuccess(res, '', 204)
+
+    } catch (error) {
+        sendSuccess(res, 'failed to deleted Todo', 500)
+    }
 })
