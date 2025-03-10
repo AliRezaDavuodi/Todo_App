@@ -1,15 +1,16 @@
-import express, { Application } from 'express'
-import morgan from 'morgan'
-import helmet from 'helmet'
-import cors from 'cors'
-import dotenv from 'dotenv';
+import app from './app'
+import { todo } from './controllers/todo/todo';
 
-dotenv.config()
+const PORT: string = process.env.PORT ?? '3000'
 
-const app: Application = express()
+app.all('/', (_req, _res, next) => {
+    console.log('Time: ', Date.now());
+    next()
+})
 
-app.use(morgan('combined'))
-app.use(helmet())
-app.use(cors())
+app.use('/todo', todo)
 
-export default app
+
+app.listen(PORT, function (): void {
+    console.log("Server is running on port " + PORT);
+});
