@@ -8,6 +8,7 @@ import { createTodoDto } from "../../Dtos/todo/createTodoDto";
 import { FileRepository } from "../../helper/file.repository";
 import { sendError } from "../../helper/sendError";
 import { DeleteTodoDto } from "../../Dtos/todo/deleteTodoDto";
+import { UpdateTodoDto } from "../../Dtos/todo/updateTodoDto";
 
 export const todo: Router = Router()
 
@@ -43,8 +44,33 @@ todo.post('/', validateDto(createTodoDto), async (req: Request<{}, {}, createTod
     }
 })
 
-todo.patch('/', (_req: Request, res: Response) => {
-    res.end('post method called')
+todo.patch('/', validateDto(UpdateTodoDto), async (req: Request<{}, {}, UpdateTodoDto>, res: Response) => {
+    try {
+        const todos = await FileRepository.readFile()
+        const todoIndex = todos.findIndex(todo => todo.id === req.body.id)
+
+        if (todoIndex === -1) {
+            sendError(res, "There is No Todo With This ID.", 404)
+            return
+        }
+
+        const updatedTodo = {
+            ...todos[todoIndex],
+            title: req.body?.title ?? todos[todoIndex].title,
+            description: req.body?.description ?? todos[todoIndex].description
+        }
+
+        todos.splice(todoIndex, 1, updatedTodo)
+
+        await FileRepository.writeFile(todos)
+
+        sendSuccess(res, todos, 200)
+
+    } catch (error) {
+        console.log(error);
+        sendError(res, 'update failed', 500)
+    }
+
 })
 
 todo.delete('/', validateDto(DeleteTodoDto), async (req: Request<{}, {}, DeleteTodoDto>, res: Response) => {
