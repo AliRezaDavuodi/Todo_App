@@ -10,10 +10,12 @@ export const validateDto = <T extends object>(dtoClass: new () => T) => {
         const errors = await validate(dtoDataInstance)
         if (errors.length > 0) {
             sendError(res, errors, 400)
+            return
         }
 
         if (Object.keys(req.body).length > Object.keys(dtoDataInstance).length) {
             sendError(res, 'Please remove Extra properties from the body.', 400)
+            return
         }
 
         req.body = dtoDataInstance
