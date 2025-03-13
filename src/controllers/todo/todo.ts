@@ -7,7 +7,6 @@ import { validateDto } from "../../helper/validateDto";
 import { createTodoDto } from "../../Dtos/todo/createTodoDto";
 import { FileRepository } from "../../helper/file.repository";
 import { sendError } from "../../helper/sendError";
-import { DeleteTodoDto } from "../../Dtos/todo/deleteTodoDto";
 import { UpdateTodoDto } from "../../Dtos/todo/updateTodoDto";
 
 export const todo: Router = Router()
@@ -29,14 +28,14 @@ todo.post('/', validateDto(createTodoDto), async (req: Request<{}, {}, createTod
         const newTodo: ITodo = {
             id: Date.now(),
             title: req.body.title,
-            description: req.body.description as string,
+            description: req.body.description ?? "",
             user_id: req.body.user_id,
             status: 1,
             created_at: new Date()
         }
         const newTodoData: ITodo[] = [...todos, newTodo]
         await FileRepository.writeFile(newTodoData)
-        sendSuccess(res, 'Todo added successfully.', 201)
+        sendSuccess(res, newTodo, 201)
     } catch (error) {
         console.log(error);
         sendError(res, 'Failed to create todo', 500)
@@ -44,10 +43,11 @@ todo.post('/', validateDto(createTodoDto), async (req: Request<{}, {}, createTod
     }
 })
 
-todo.patch('/', validateDto(UpdateTodoDto), async (req: Request<{}, {}, UpdateTodoDto>, res: Response) => {
+todo.patch('/:id', validateDto(UpdateTodoDto), async (req: Request<{ id: string }, {}, UpdateTodoDto>, res: Response) => {
     try {
+        const id = Number(req.params.id)
         const todos = await FileRepository.readFile()
-        const todoIndex = todos.findIndex(todo => todo.id === req.body.id)
+        const todoIndex = todos.findIndex(todo => todo.id === id)
 
         if (todoIndex === -1) {
             sendError(res, "There is No Todo With This ID.", 404)
@@ -64,7 +64,7 @@ todo.patch('/', validateDto(UpdateTodoDto), async (req: Request<{}, {}, UpdateTo
 
         await FileRepository.writeFile(todos)
 
-        sendSuccess(res, todos, 200)
+        sendSuccess(res, todos[todoIndex], 200)
 
     } catch (error) {
         console.log(error);
@@ -73,10 +73,15 @@ todo.patch('/', validateDto(UpdateTodoDto), async (req: Request<{}, {}, UpdateTo
 
 })
 
-todo.delete('/', validateDto(DeleteTodoDto), async (req: Request<{}, {}, DeleteTodoDto>, res: Response) => {
+todo.delete('/:id', async (req: Request<{ id: string }>, res: Response) => {
     try {
         const todos = await FileRepository.readFile()
-        const id = Number(req.body.id)
+        const id = Number(req.params.id)
+
+        if (!id) {
+            sendError(res, 'Please Put Todo id in the url.', 400)
+            return
+        }
 
         const todoIndex = todos.findIndex(todo => todo.id === id);
 
@@ -88,9 +93,9 @@ todo.delete('/', validateDto(DeleteTodoDto), async (req: Request<{}, {}, DeleteT
         const updateTodos = todos.filter(todo => todo.id !== id)
         await FileRepository.writeFile(updateTodos)
 
-        sendSuccess(res, '', 204)
+        res.status(204).send()
 
     } catch (error) {
-        sendSuccess(res, 'failed to deleted Todo', 500)
+        sendError(res, 'failed to deleted Todo', 500)
     }
 })
