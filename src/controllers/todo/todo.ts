@@ -1,13 +1,11 @@
 import { Request, Response, Router } from "express";
-import fs from 'node:fs'
-import { ITodo } from "../../interfaces/ITodo";
-import { resolve } from "node:path";
-import { sendSuccess } from "../../helper/sendSuccess";
-import { validateDto } from "../../helper/validateDto";
-import { createTodoDto } from "../../Dtos/todo/createTodoDto";
+import { createTodoDto } from "../../dtos/todo/createTodoDto";
+import { UpdateTodoDto } from "../../dtos/todo/updateTodoDto";
 import { FileRepository } from "../../helper/file.repository";
 import { sendError } from "../../helper/sendError";
-import { UpdateTodoDto } from "../../Dtos/todo/updateTodoDto";
+import { sendSuccess } from "../../helper/sendSuccess";
+import { validateDto } from "../../helper/validateDto";
+import { ITodo } from "../../interfaces/ITodo";
 
 export const todo: Router = Router()
 
