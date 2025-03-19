@@ -1,7 +1,7 @@
 import { BaseRepository } from './base.repository'
 import { UserEntity } from '../entities/user.entity'
 
-export class UserRepository extends BaseRepository<UserEntity> {
+export class AuthRepository extends BaseRepository<UserEntity> {
   constructor() {
     super(UserEntity)
   }

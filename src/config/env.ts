@@ -10,4 +10,5 @@ export const config = {
   DB_USERNAME: process.env.DB_USERNAME,
   DB_NAME: process.env.DB_NAME,
   DB_PASSWORD: process.env.DB_PASSWORD,
+  HASH_SALT: process.env.HASH_SALT,
 }

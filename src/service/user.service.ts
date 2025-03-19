@@ -11,4 +11,8 @@ export class UserService {
   public async findById(userId: number): Promise<UserEntity | null> {
     return this.userRepo.findById(userId)
   }
+
+  public async findByEmail(email: string): Promise<UserEntity | null> {
+    return this.userRepo.findByEmail(email)
+  }
 }
