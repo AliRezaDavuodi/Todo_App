@@ -2,9 +2,10 @@ import express, { Application } from 'express'
 import morgan from 'morgan'
 import helmet from 'helmet'
 import cors from 'cors'
-import dotenv from 'dotenv';
-import bodyParser from 'body-parser';
-import { errorHandler } from './middleware/Error.middleware';
+import dotenv from 'dotenv'
+import bodyParser from 'body-parser'
+import "reflect-metadata"
+import { errorHandler } from './middleware/error.middleware'
 
 dotenv.config()
 
