@@ -1,19 +1,23 @@
-import { Expose } from 'class-transformer';
-import { IsOptional, IsString, IsBoolean, MinLength, MaxLength, IsPositive, IsNotEmpty, IsInt } from 'class-validator';
+import { Expose } from 'class-transformer'
+import { IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator'
 
 export class UpdateTodoDto {
-    @IsNotEmpty()
-    @Expose()
-    id!: number
+  @Expose()
+  @IsOptional()
+  @IsString()
+  @MinLength(5)
+  title?: string
 
-    @IsOptional()
-    @MinLength(5)
-    @Expose()
-    title?: string;
+  @Expose()
+  @IsOptional()
+  @IsString()
+  @MaxLength(150)
+  description?: string
 
-    @IsString()
-    @IsOptional()
-    @MaxLength(150)
-    @Expose()
-    description?: string;
+  @Expose()
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(3)
+  status?: number
 }
