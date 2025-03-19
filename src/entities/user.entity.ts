@@ -8,7 +8,7 @@ export class UserEntity {
   @Column()
   name!: string
   @Column()
-  user_name!: string
+  username!: string
   @Column()
   email!: string
   @Column()

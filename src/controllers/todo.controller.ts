@@ -1,17 +1,17 @@
 import { Request, Response, Router } from 'express'
-import { CreateTodoDto } from '../../dtos/todo/createTodoDto'
-import { UpdateTodoDto } from '../../dtos/todo/updateTodoDto'
-import { FileRepository } from '../../helper/file.repository'
-import { sendError } from '../../helper/sendError'
-import { sendSuccess } from '../../helper/sendSuccess'
-import { validateDto } from '../../helper/validateDto'
-import { TodoService } from '../../service/todo.service'
-import { TodoEntity } from '../../entities/todo.entity'
+import { CreateTodoDto } from '../dtos/todo/createTodoDto'
+import { UpdateTodoDto } from '../dtos/todo/updateTodoDto'
+import { FileRepository } from '../helper/file.repository'
+import { sendError } from '../helper/sendError'
+import { sendSuccess } from '../helper/sendSuccess'
+import { validateDto } from '../helper/validateDto'
+import { TodoService } from '../service/todo.service'
+import { TodoEntity } from '../entities/todo.entity'
 
-export const todoRoute: Router = Router()
+export const todoController: Router = Router()
 const todoService = new TodoService()
 
-todoRoute.get('/', async (_req: Request, res: Response) => {
+todoController.get('/', async (_req: Request, res: Response) => {
   try {
     const todos: TodoEntity[] = await todoService.findAll()
     sendSuccess(res, todos)
@@ -21,7 +21,7 @@ todoRoute.get('/', async (_req: Request, res: Response) => {
   }
 })
 
-todoRoute.post('/', validateDto(CreateTodoDto), async (req: Request<{}, {}, CreateTodoDto>, res: Response) => {
+todoController.post('/', validateDto(CreateTodoDto), async (req: Request<{}, {}, CreateTodoDto>, res: Response) => {
   try {
     const newTodo = {
       title: req.body.title,
@@ -38,7 +38,7 @@ todoRoute.post('/', validateDto(CreateTodoDto), async (req: Request<{}, {}, Crea
   }
 })
 
-todoRoute.patch(
+todoController.patch(
   '/:id',
   validateDto(UpdateTodoDto),
   async (req: Request<{ id: string }, {}, UpdateTodoDto>, res: Response) => {
@@ -67,7 +67,7 @@ todoRoute.patch(
   },
 )
 
-todoRoute.delete('/:id', async (req: Request<{ id: string }>, res: Response) => {
+todoController.delete('/:id', async (req: Request<{ id: string }>, res: Response) => {
   try {
     const id = Number(req.params.id)
 
