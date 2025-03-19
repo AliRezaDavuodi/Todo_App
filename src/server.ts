@@ -1,6 +1,7 @@
 import app from './app'
-import { todo } from './controllers/todo/todo'
+import { todoRoute } from './controllers/todo/todoRoute'
 import { AppDataSource } from './database/database'
+import { userRoute } from './controllers/user/user.controller'
 
 const PORT: string = process.env.PORT ?? '3000'
 
@@ -9,7 +10,8 @@ app.all('/', (_req, _res, next) => {
   next()
 })
 
-app.use('/todo', todo)
+app.use('/todo', todoRoute)
+app.use('/user', userRoute)
 
 ;(async () => {
   try {

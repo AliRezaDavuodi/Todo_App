@@ -8,10 +8,10 @@ import { validateDto } from '../../helper/validateDto'
 import { TodoService } from '../../service/todo.service'
 import { TodoEntity } from '../../entities/todo.entity'
 
-export const todo: Router = Router()
+export const todoRoute: Router = Router()
 const todoService = new TodoService()
 
-todo.get('/', async (_req: Request, res: Response) => {
+todoRoute.get('/', async (_req: Request, res: Response) => {
   try {
     const todos: TodoEntity[] = await todoService.findAll()
     sendSuccess(res, todos)
@@ -21,7 +21,7 @@ todo.get('/', async (_req: Request, res: Response) => {
   }
 })
 
-todo.post('/', validateDto(CreateTodoDto), async (req: Request<{}, {}, CreateTodoDto>, res: Response) => {
+todoRoute.post('/', validateDto(CreateTodoDto), async (req: Request<{}, {}, CreateTodoDto>, res: Response) => {
   try {
     const newTodo = {
       title: req.body.title,
@@ -38,7 +38,7 @@ todo.post('/', validateDto(CreateTodoDto), async (req: Request<{}, {}, CreateTod
   }
 })
 
-todo.patch(
+todoRoute.patch(
   '/:id',
   validateDto(UpdateTodoDto),
   async (req: Request<{ id: string }, {}, UpdateTodoDto>, res: Response) => {
@@ -67,7 +67,7 @@ todo.patch(
   },
 )
 
-todo.delete('/:id', async (req: Request<{ id: string }>, res: Response) => {
+todoRoute.delete('/:id', async (req: Request<{ id: string }>, res: Response) => {
   try {
     const id = Number(req.params.id)
 
